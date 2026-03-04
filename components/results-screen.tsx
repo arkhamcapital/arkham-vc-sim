@@ -1,11 +1,25 @@
-﻿"use client"
+"use client"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatMoney } from "./investment-slider"
 import { rounds } from "@/lib/quiz-data"
-import { RotateCcw, Trophy, TrendingDown, CircleDollarSign } from "lucide-react"
+import { RotateCcw, Trophy, TrendingDown, CircleDollarSign, TrendingUp } from "lucide-react"
 import Link from "next/link"
+
+/** Rough $100k invested → value today (estimate). Keys match company names in quiz-data. */
+const ROI_BY_COMPANY: Record<string, { min: number; max: number }> = {
+  Visa: { min: 2_000_000, max: 4_000_000 },
+  Meta: { min: 1_000_000, max: 2_000_000 },
+  Uber: { min: 100_000, max: 300_000 },
+  Airbnb: { min: 100_000, max: 400_000 },
+  Doordash: { min: 100_000, max: 300_000 },
+  Dropbox: { min: 50_000, max: 150_000 },
+  Coinbase: { min: 80_000, max: 200_000 },
+  Instacart: { min: 110_000, max: 130_000 },
+  Pinterest: { min: 70_000, max: 150_000 },
+  Ferrari: { min: 200_000, max: 500_000 },
+}
 
 interface RoundResult {
   correct: boolean
@@ -53,6 +67,22 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
     gradeColor = "text-destructive"
     message = "Rough outing. The market took you for a ride."
   }
+
+  // Only for correct picks: company name + ROI range ($100k → today estimate)
+  const correctPicksWithRoi = roundResults
+    .filter((r) => r.correct)
+    .map((r) => {
+      const roundData = rounds.find((round) => round.id === r.roundId)
+      const realCompany = roundData?.companies.find((c) => c.isReal)
+      const name = realCompany?.name
+      const roi = name ? ROI_BY_COMPANY[name] : null
+      return name && roi ? { name, min: roi.min, max: roi.max } : null
+    })
+    .filter((x): x is { name: string; min: number; max: number } => x != null)
+
+  const roiTotalMin = correctPicksWithRoi.reduce((sum, x) => sum + x.min, 0)
+  const roiTotalMax = correctPicksWithRoi.reduce((sum, x) => sum + x.max, 0)
+  const showRoiBox = correctPicksWithRoi.length > 0
 
   return (
     <div className="flex flex-col items-center gap-8 py-8 md:py-12">
@@ -107,6 +137,40 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
           <span className="text-xs text-muted-foreground font-mono">Lost</span>
         </div>
       </div>
+
+      {/* ROI estimate: only for correct picks */}
+      {showRoiBox && (
+        <div className="w-full max-w-lg rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-mono font-bold uppercase tracking-widest text-primary">
+              If you had invested $100k in each correct pick
+            </h3>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Rough estimate of what that $100k could be worth today (varies by round and timing).
+          </p>
+          <div className="space-y-2">
+            {correctPicksWithRoi.map(({ name, min, max }) => (
+              <div
+                key={name}
+                className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
+              >
+                <span className="text-sm font-medium text-foreground">{name}</span>
+                <span className="text-sm font-mono tabular-nums text-primary">
+                  {formatMoney(min)} – {formatMoney(max)}
+                </span>
+              </div>
+            ))}
+            <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-primary/30">
+              <span className="text-sm font-bold text-foreground">Total (combined range)</span>
+              <span className="text-sm font-mono font-bold tabular-nums text-primary">
+                {formatMoney(roiTotalMin)} – {formatMoney(roiTotalMax)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Round-by-round */}
       <div className="w-full max-w-lg">

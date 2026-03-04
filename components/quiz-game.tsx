@@ -89,7 +89,7 @@ export function QuizGame() {
             Test your investor instincts
           </span>
           <h1 className="text-5xl md:text-7xl font-bold text-foreground text-center text-balance leading-tight">
-            VC-simulator
+            Simulatorvest
           </h1>
           <p className="text-muted-foreground text-center max-w-lg leading-relaxed mt-2">
             {"You've been given "}
