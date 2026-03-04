@@ -14,11 +14,11 @@ export interface Round {
 export const rounds: Round[] = [
   {
     id: 1,
-    era: "2000s Tech Boom",
+    era: "Fintech",
     companies: [
       {
         name: "NexCard",
-        description: "A proposed digital wallet and real-time settlement network connecting merchants and banks across borders.",
+        description: "A proposed digital wallet and real-time settlement network connecting merchants across borders.",
         isReal: false,
         revealText: "This was a fake company. The description will be revealed after you submit your answer.",
       },
@@ -30,7 +30,7 @@ export const rounds: Round[] = [
       },
       {
         name: "PayBridge",
-        description: "Connecting banks and retailers through instant authorization rails and tokenized credentials.",
+        description: "Connecting retailers through instant authorization rails and tokenized credentials.",
         isReal: false,
         revealText: "This was a fake company. The description will be revealed after you submit your answer.",
       },
@@ -38,7 +38,7 @@ export const rounds: Round[] = [
   },
   {
     id: 2,
-    era: "1990s Dot-Com",
+    era: "Social Media",
     companies: [
       {
         name: "Meta",
@@ -62,7 +62,7 @@ export const rounds: Round[] = [
   },
   {
     id: 3,
-    era: "2010s Unicorns",
+    era: "Transportation",
     companies: [
       {
         name: "RideLink",
@@ -86,7 +86,7 @@ export const rounds: Round[] = [
   },
   {
     id: 4,
-    era: "1980s Wall Street",
+    era: "Travel",
     companies: [
       {
         name: "StayShare",
@@ -110,7 +110,7 @@ export const rounds: Round[] = [
   },
   {
     id: 5,
-    era: "2020s AI Wave",
+    era: "Takeout",
     companies: [
       {
         name: "Doordash",
@@ -134,7 +134,7 @@ export const rounds: Round[] = [
   },
   {
     id: 6,
-    era: "1970s Industrial",
+    era: "Cloud Storage",
     companies: [
       {
         name: "CloudVault",
@@ -158,7 +158,7 @@ export const rounds: Round[] = [
   },
   {
     id: 7,
-    era: "2000s Social Media",
+    era: "Crypto",
     companies: [
       {
         name: "Coinbase",
@@ -182,7 +182,7 @@ export const rounds: Round[] = [
   },
   {
     id: 8,
-    era: "1990s Biotech",
+    era: "Delivery",
     companies: [
       {
         name: "CartDash",
@@ -206,7 +206,7 @@ export const rounds: Round[] = [
   },
   {
     id: 9,
-    era: "2010s FinTech",
+    era: "Social Gallery",
     companies: [
       {
         name: "IdeaBoard",
@@ -230,7 +230,7 @@ export const rounds: Round[] = [
   },
   {
     id: 10,
-    era: "2020s Climate Tech",
+    era: "Automotive",
     companies: [
       {
         name: "Velocità Motors",

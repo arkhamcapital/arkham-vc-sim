@@ -1,10 +1,10 @@
-"use client"
+﻿"use client"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatMoney } from "./investment-slider"
 import { rounds } from "@/lib/quiz-data"
-import { RotateCcw, Trophy, TrendingDown, Minus } from "lucide-react"
+import { RotateCcw, Trophy, TrendingDown, CircleDollarSign } from "lucide-react"
 import Link from "next/link"
 
 interface RoundResult {
@@ -97,9 +97,9 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
           <span className="text-xs text-muted-foreground font-mono">Correct</span>
         </div>
         <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-4">
-          <Minus className="w-5 h-5 text-muted-foreground mb-1" />
+          <CircleDollarSign className="w-5 h-5 text-muted-foreground mb-1" />
           <span className="text-2xl font-bold font-mono text-foreground">{formatMoney(totalInvested)}</span>
-          <span className="text-xs text-muted-foreground font-mono">Total Invested</span>
+          <span className="text-xs text-muted-foreground font-mono">Initial Investment</span>
         </div>
         <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-4">
           <TrendingDown className="w-5 h-5 text-destructive mb-1" />
