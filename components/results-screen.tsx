@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatMoney } from "./investment-slider"
+import { rounds } from "@/lib/quiz-data"
 import { RotateCcw, Trophy, TrendingDown, Minus } from "lucide-react"
 import Link from "next/link"
 
@@ -113,35 +114,42 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
           Round-by-Round
         </h3>
         <div className="flex flex-col gap-2">
-          {roundResults.map((result, i) => (
-            <div
-              key={i}
-              className={cn(
-                "flex items-center justify-between px-4 py-3 rounded-lg border",
-                result.correct ? "border-primary/20 bg-primary/5" : "border-destructive/20 bg-destructive/5"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-mono text-muted-foreground w-6">R{i + 1}</span>
+          {roundResults.map((result, i) => {
+            const roundData = rounds.find((r) => r.id === result.roundId)
+            const realCompany = roundData?.companies.find((c) => c.isReal)
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center justify-between px-4 py-3 rounded-lg border",
+                  result.correct ? "border-primary/20 bg-primary/5" : "border-destructive/20 bg-destructive/5"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono text-muted-foreground w-6">R{i + 1}</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {realCompany?.name ?? "—"}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-xs font-mono font-bold uppercase tracking-wider",
+                      result.correct ? "text-primary" : "text-destructive"
+                    )}
+                  >
+                    {result.correct ? "Correct" : "Wrong"}
+                  </span>
+                </div>
                 <span
                   className={cn(
-                    "text-xs font-mono font-bold uppercase tracking-wider",
+                    "text-sm font-mono tabular-nums font-bold",
                     result.correct ? "text-primary" : "text-destructive"
                   )}
                 >
-                  {result.correct ? "Correct" : "Wrong"}
+                  {result.correct ? "+" : "-"}{formatMoney(result.invested)}
                 </span>
               </div>
-              <span
-                className={cn(
-                  "text-sm font-mono tabular-nums font-bold",
-                  result.correct ? "text-primary" : "text-destructive"
-                )}
-              >
-                {result.correct ? "+" : "-"}{formatMoney(result.invested)}
-              </span>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
@@ -162,8 +170,7 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
           className="flex-1 rounded-xl border h-12 border-emerald-500/40 bg-card/60 font-mono tracking-widest text-xs uppercase text-emerald-300 hover:bg-card/60 hover:border-emerald-400 hover:text-emerald-400"
         >
           <Link href="/submit-startup">
-            Submit startup for review
-          </Link>
+            Founder - Let's Connect          </Link>
         </Button>
       </div>
     </div>

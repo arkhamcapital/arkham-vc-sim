@@ -13,6 +13,15 @@ import { ArrowRight, Send } from "lucide-react"
 const STARTING_AMOUNT = 1_000_000
 const ROUND_INVESTMENT = 100_000
 
+/** Anonymous label per round: R1 = Company A/B/C, R2 = D/E/F, … R10 = AA/AB/AC. Names only revealed after submit. */
+function getCompanyDisplayLabel(roundIndex: number, companyIndex: number): string {
+  const n = roundIndex * 3 + companyIndex
+  if (n < 26) return `Company ${String.fromCharCode(65 + n)}`
+  const first = String.fromCharCode(65 + Math.floor(n / 26) - 1)
+  const second = String.fromCharCode(65 + (n % 26))
+  return `Company ${first}${second}`
+}
+
 interface RoundResult {
   correct: boolean
   invested: number
@@ -115,8 +124,7 @@ export function QuizGame() {
             className="flex-1 rounded-xl h-12 border border-emerald-500/40 bg-card/60 font-mono tracking-widest text-xs uppercase text-emerald-300 hover:bg-card/60 hover:border-emerald-400 hover:text-emerald-400"
           >
             <Link href="/submit-startup">
-              Submit startup for review
-            </Link>
+              Founder - Let’s Connect            </Link>
           </Button>
         </div>
       </div>
@@ -179,6 +187,7 @@ export function QuizGame() {
             key={`${round.id}-${index}`}
             company={company}
             index={index}
+            displayName={getCompanyDisplayLabel(currentRound, index)}
             isSelected={selectedCompany === index}
             isRevealed={false}
             onSelect={() => {
@@ -201,7 +210,7 @@ export function QuizGame() {
           >
             <Send className="w-4 h-4 mr-2" />
             Invest {formatMoney(ROUND_INVESTMENT)} in{" "}
-            {selectedCompany !== null ? round.companies[selectedCompany].name : "..."}
+            {selectedCompany !== null ? getCompanyDisplayLabel(currentRound, selectedCompany) : "..."}
           </Button>
         </div>
       )}

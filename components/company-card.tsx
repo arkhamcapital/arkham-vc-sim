@@ -7,6 +7,8 @@ import { Check, X, Building2 } from "lucide-react"
 interface CompanyCardProps {
   company: Company
   index: number
+  /** Anonymous label during round (e.g. "Company A"); real name only shown when isRevealed. */
+  displayName: string
   isSelected: boolean
   isRevealed: boolean
   onSelect: () => void
@@ -15,11 +17,13 @@ interface CompanyCardProps {
 export function CompanyCard({
   company,
   index,
+  displayName,
   isSelected,
   isRevealed,
   onSelect,
 }: CompanyCardProps) {
   const labels = ["A", "B", "C"]
+  const title = isRevealed ? company.name : displayName
 
   return (
     <button
@@ -79,7 +83,7 @@ export function CompanyCard({
       {/* Company Name */}
       <div className="flex items-center gap-2 mb-3">
         <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
-        <h3 className="text-lg font-semibold text-card-foreground">{company.name}</h3>
+        <h3 className="text-lg font-semibold text-card-foreground">{title}</h3>
       </div>
 
       {/* Description */}
