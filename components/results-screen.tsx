@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -97,22 +97,41 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
         </span>
       </div>
 
-      {/* Final portfolio */}
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          Final Portfolio
-        </span>
-        <span className="text-4xl md:text-5xl font-bold font-mono text-foreground tabular-nums">
-          {formatMoney(finalPortfolio)}
-        </span>
-        <span
-          className={cn(
-            "text-lg font-mono tabular-nums",
-            isUp ? "text-primary" : "text-destructive"
-          )}
-        >
-          {isUp ? "+" : ""}{pnlPercent}% return
-        </span>
+      {/* Final portfolio vs hypothetical ROI side by side */}
+      <div className="w-full max-w-3xl grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card/60 px-4 py-3">
+          <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+            Actual Portfolio
+          </span>
+          <span className="text-4xl md:text-5xl font-bold font-mono text-foreground tabular-nums">
+            {formatMoney(finalPortfolio)}
+          </span>
+          <span
+            className={cn(
+              "text-lg font-mono tabular-nums",
+              isUp ? "text-primary" : "text-destructive"
+            )}
+          >
+            {isUp ? "+" : ""}{pnlPercent}% return
+          </span>
+          <span className="text-[11px] text-muted-foreground font-mono mt-1">
+            Includes all losses from wrong picks.
+          </span>
+        </div>
+
+        {showRoiBox && (
+          <div className="flex flex-col items-center gap-1 rounded-xl border border-primary/40 bg-primary/5 px-4 py-3">
+            <span className="text-xs font-mono text-primary uppercase tracking-widest text-center">
+              Hypothetical Value (Correct Picks Only)
+            </span>
+            <span className="text-2xl md:text-3xl font-bold font-mono text-primary tabular-nums">
+              {formatMoney(roiTotalMin)} – {formatMoney(roiTotalMax)}
+            </span>
+            <span className="text-[11px] text-primary/80 font-mono text-center mt-1">
+              If you had put $100k into each company you correctly identified.
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Message */}
