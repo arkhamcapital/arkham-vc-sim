@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatMoney } from "./investment-slider"
 import { RotateCcw, Trophy, TrendingDown, Minus } from "lucide-react"
+import Link from "next/link"
 
 interface RoundResult {
   correct: boolean
@@ -145,14 +146,26 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
       </div>
 
       {/* Restart */}
-      <Button
-        onClick={onRestart}
-        size="lg"
-        className="mt-4 font-mono tracking-wider text-primary-foreground"
-      >
-        <RotateCcw className="w-4 h-4 mr-2" />
-        Play Again
-      </Button>
+      <div className="flex flex-col sm:flex-row gap-3 mt-4">
+        <Button
+          onClick={onRestart}
+          size="lg"
+          className="group inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-600 px-8 text-lg font-mono font-semibold tracking-wider text-white shadow-[0_0_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:bg-emerald-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.9)]"
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Play Again
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="flex-1 rounded-xl border h-12 border-emerald-500/40 bg-card/60 font-mono tracking-widest text-xs uppercase text-emerald-300 hover:bg-card/60 hover:border-emerald-400 hover:text-emerald-400"
+        >
+          <Link href="/submit-startup">
+            Submit startup for review
+          </Link>
+        </Button>
+      </div>
     </div>
   )
 }
