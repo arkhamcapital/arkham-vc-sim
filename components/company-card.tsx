@@ -10,7 +10,6 @@ interface CompanyCardProps {
   isSelected: boolean
   isRevealed: boolean
   onSelect: () => void
-  heat: "hot" | "neutral" | "cold"
 }
 
 export function CompanyCard({
@@ -19,7 +18,6 @@ export function CompanyCard({
   isSelected,
   isRevealed,
   onSelect,
-  heat,
 }: CompanyCardProps) {
   const labels = ["A", "B", "C"]
 
@@ -37,9 +35,7 @@ export function CompanyCard({
         isRevealed && isSelected && !company.isReal && "border-destructive bg-destructive/10",
         isRevealed && !isSelected && company.isReal && "border-primary/50 bg-primary/5",
         isRevealed && !isSelected && !company.isReal && "border-border/50 bg-card opacity-50",
-        isRevealed && "cursor-default hover:shadow-none hover:border-current",
-        heat === "hot" && !isRevealed && "border-emerald-400/80 hover:border-emerald-400 hover:shadow-emerald-400/40",
-        heat === "cold" && !isRevealed && "border-red-500/80 hover:border-red-400 hover:shadow-red-400/40"
+        isRevealed && "cursor-default hover:shadow-none hover:border-current"
       )}
     >
       {/* Selection indicator */}

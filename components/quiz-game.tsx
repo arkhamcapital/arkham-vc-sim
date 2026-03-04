@@ -3,12 +3,11 @@
 import { useState, useCallback } from "react"
 import { rounds } from "@/lib/quiz-data"
 import { CompanyCard } from "./company-card"
-import { InvestmentSlider, formatMoney } from "./investment-slider"
+import { formatMoney } from "./investment-slider"
 import { Scoreboard } from "./scoreboard"
 import { ResultsScreen } from "./results-screen"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { ArrowRight, Send, AlertTriangle } from "lucide-react"
+import { ArrowRight, Wallet2 } from "lucide-react"
 
 const STARTING_AMOUNT = 1_000_000
 const ROUND_INVESTMENT = 100_000
@@ -25,31 +24,40 @@ export function QuizGame() {
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null)
   const [investmentAmount, setInvestmentAmount] = useState(ROUND_INVESTMENT)
   const [roundResults, setRoundResults] = useState<RoundResult[]>([])
+  const [isTransitioningRound, setIsTransitioningRound] = useState(false)
+  const [isDraggingWallet, setIsDraggingWallet] = useState(false)
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null)
+  const [dragTargetIndex, setDragTargetIndex] = useState<number | null>(null)
 
   const round = rounds[currentRound]
 
-  const handleSubmit = useCallback(() => {
-    if (selectedCompany === null) return
+  const handleSubmit = useCallback(
+    (companyIndex: number) => {
+      const company = round.companies[companyIndex]
+      const isCorrect = company.isReal
 
-    const company = round.companies[selectedCompany]
-    const isCorrect = company.isReal
+      const newResult: RoundResult = {
+        correct: isCorrect,
+        invested: investmentAmount,
+        roundId: round.id,
+      }
 
-    const newResult: RoundResult = {
-      correct: isCorrect,
-      invested: investmentAmount,
-      roundId: round.id,
-    }
+      setRoundResults((prev) => [...prev, newResult])
 
-    setRoundResults((prev) => [...prev, newResult])
-
-    // Immediately move to next round or finish without revealing correctness per round
-    if (currentRound >= rounds.length - 1) {
-      setGameState("finished")
-    } else {
-      setCurrentRound((prev) => prev + 1)
-      setSelectedCompany(null)
-    }
-  }, [selectedCompany, round, investmentAmount, currentRound])
+      // Immediately move to next round or finish without revealing correctness per round
+      if (currentRound >= rounds.length - 1) {
+        setGameState("finished")
+      } else {
+        setIsTransitioningRound(true)
+        setTimeout(() => {
+          setCurrentRound((prev) => prev + 1)
+          setSelectedCompany(null)
+          setInvestmentAmount(ROUND_INVESTMENT)
+          setIsTransitioningRound(false)
+        }, 200)
+      }
+    },
+    [round, investmentAmount, currentRound])
 
   const handleRestart = useCallback(() => {
     setGameState("intro")
@@ -64,12 +72,35 @@ export function QuizGame() {
     setInvestmentAmount(ROUND_INVESTMENT)
   }, [])
 
-  
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingWallet) return
+    setDragPosition({ x: event.clientX, y: event.clientY })
+  }
+
+  const handleMouseUp = () => {
+    if (!isDraggingWallet) return
+
+    if (dragTargetIndex !== null) {
+      handleSubmit(dragTargetIndex)
+    }
+
+    setIsDraggingWallet(false)
+    setDragPosition(null)
+    setDragTargetIndex(null)
+  }
 
   // Intro screen
   if (gameState === "intro") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4">
+      <div className="relative flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4 overflow-hidden">
+        {/* Stock-market style background */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          {/* Gradient glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(74,222,128,0.35),transparent_60%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.4),transparent_55%)]" />
+          {/* Grid lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.25)_1px,transparent_1px)] bg-size-[56px_56px]" />
+        </div>
+
         <div className="flex flex-col items-center gap-3">
           <span className="text-xs font-mono text-primary uppercase tracking-[0.3em]">
             Test your investor instincts
@@ -116,9 +147,13 @@ export function QuizGame() {
     )
   }
 
-  // Game screen (playing + revealed)
+  // Game screen
   return (
-    <div className="flex flex-col gap-6">
+    <div
+      className="flex flex-col gap-6"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
       {/* Scoreboard */}
       <Scoreboard
         portfolio={STARTING_AMOUNT}
@@ -130,63 +165,97 @@ export function QuizGame() {
       {/* Round header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-mono text-primary uppercase tracking-[0.3em]">
-            Round {currentRound + 1}
-          </span>
           <span className="text-xs font-mono text-muted-foreground">
             {round.era}
           </span>
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-          Which company is real?
+          Round {currentRound + 1}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Select the company you believe actually existed. Each round you put 100,000 into a single company—get it
-          right and your stake survives, get it wrong and that 100,000 goes to 0.
+          To get started, drop the cash into the company you believe actually exists.. Each round you put{" "}
+          <span className="font-mono font-bold text-foreground">
+            {formatMoney(ROUND_INVESTMENT)}
+          </span>{" "}
+          into a single company. Get it right and your stake survives, get it wrong and that round&apos;s{" "}
+          <span className="font-mono font-bold text-foreground">
+            {formatMoney(ROUND_INVESTMENT)}
+          </span>{" "}
+          goes to 0.
         </p>
       </div>
 
       {/* Company cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        className={[
+          "grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300",
+          isTransitioningRound ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0",
+        ].join(" ")}
+      >
         {round.companies.map((company, index) => (
-          <CompanyCard
+          <div
             key={`${round.id}-${index}`}
-            company={company}
-            index={index}
-            isSelected={selectedCompany === index}
-            isRevealed={false}
-            heat={
-              roundResults.length === 0
-                ? "neutral"
-                : (() => {
-                    const correctPicks = roundResults.filter((r) => r.correct).length
-                    const accuracy = correctPicks / roundResults.length
-                    if (accuracy >= 0.7) return "hot"
-                    if (accuracy <= 0.3) return "cold"
-                    return "neutral"
-                  })()
-            }
-            onSelect={() => {
-              if (gameState === "playing") {
-                setSelectedCompany(index)
+            onMouseEnter={() => {
+              if (isDraggingWallet) {
+                setDragTargetIndex(index)
               }
             }}
-          />
+            onMouseLeave={() => {
+              if (isDraggingWallet && dragTargetIndex === index) {
+                setDragTargetIndex(null)
+              }
+            }}
+          >
+            <CompanyCard
+              company={company}
+              index={index}
+              isSelected={
+                selectedCompany === index || (isDraggingWallet && dragTargetIndex === index)
+              }
+              isRevealed={false}
+              onSelect={() => {
+                if (gameState === "playing" && !isDraggingWallet) {
+                  setSelectedCompany(index)
+                }
+              }}
+            />
+          </div>
         ))}
       </div>
 
-      {/* Fixed investment + Submit */}
+      {/* Wallet drag-to-invest */}
       {gameState === "playing" && (
-        <div className="rounded-xl border border-border bg-card p-5 md:p-6">
-          <Button
-            onClick={handleSubmit}
-            disabled={selectedCompany === null || investmentAmount === 0}
-            size="lg"
-            className="w-full mt-6 font-mono tracking-wider text-primary-foreground"
+        <div className="relative mt-4 flex items-center justify-center">
+          <button
+            type="button"
+            onMouseDown={(event) => {
+              event.preventDefault()
+              if (isTransitioningRound) return
+              setIsDraggingWallet(true)
+              setDragPosition({ x: event.clientX, y: event.clientY })
+              setDragTargetIndex(null)
+            }}
+            className="group flex items-center gap-3 rounded-full border border-border bg-card/80 px-4 py-2 shadow-sm backdrop-blur-sm hover:bg-card transition-colors"
           >
-            <Send className="w-4 h-4 mr-2" />
-            Invest {formatMoney(investmentAmount)} in {selectedCompany !== null ? round.companies[selectedCompany].name : "..."}
-          </Button>
+            <span className="relative flex h-8 w-10 items-center justify-center rounded-lg bg-emerald-600 text-emerald-950 overflow-hidden">
+              <Wallet2 className="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
+              <span className="absolute bottom-0 text-lg leading-none opacity-0 translate-y-3 transition-all duration-200 group-hover:opacity-100 group-hover:-translate-y-0.5">
+                💵
+              </span>
+            </span>
+            <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+              Cash in
+            </span>
+          </button>
+
+          {isDraggingWallet && dragPosition && (
+            <div
+              className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 text-3xl shadow-lg"
+              style={{ left: dragPosition.x, top: dragPosition.y }}
+            >
+              💵
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,8 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { TrendingUp, TrendingDown, DollarSign, Target } from "lucide-react"
-import { formatMoney } from "./investment-slider"
+import { Target } from "lucide-react"
 
 interface ScoreboardProps {
   portfolio: number
@@ -11,61 +10,26 @@ interface ScoreboardProps {
   roundResults: { correct: boolean; invested: number }[]
 }
 
-export function Scoreboard({ portfolio, round, totalRounds, roundResults }: ScoreboardProps) {
-  const startingAmount = 1_000_000
-  const pnl = portfolio - startingAmount
-  const pnlPercent = ((pnl / startingAmount) * 100).toFixed(1)
-  const isUp = pnl >= 0
+export function Scoreboard({ round, totalRounds }: ScoreboardProps) {
+  const progress = Math.min(Math.max(round / totalRounds, 0), 1) * 100
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      {/* Portfolio */}
-      <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          <DollarSign className="w-3 h-3" />
-          Portfolio
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between text-xs font-mono text-muted-foreground uppercase tracking-widest">
+        <div className="flex items-center gap-2">
+          <span>Rounds</span>
         </div>
-        <span className="text-xl md:text-2xl font-bold font-mono text-foreground tabular-nums">
-          {formatMoney(portfolio)}
-        </span>
-      </div>
-
-      {/* P&L */}
-      <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-          {"P&L"}
-        </div>
-        <span
-          className={cn(
-            "text-xl md:text-2xl font-bold font-mono tabular-nums",
-            isUp ? "text-primary" : "text-destructive"
-          )}
-        >
-          {isUp ? "+" : ""}{pnlPercent}%
-        </span>
-      </div>
-
-      {/* Round */}
-      <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          <Target className="w-3 h-3" />
-          Round
-        </div>
-        <span className="text-xl md:text-2xl font-bold font-mono text-foreground tabular-nums">
+        <span className="text-foreground">
           {round}/{totalRounds}
         </span>
       </div>
-
-      {/* Accuracy */}
-      <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          <TrendingUp className="w-3 h-3" />
-          Accuracy
-        </div>
-        <span className="text-xl md:text-2xl font-bold font-mono text-foreground tabular-nums">
-          {"??"}%
-        </span>
+      <div className="h-2 w-full rounded-full bg-border overflow-hidden">
+        <div
+          className={cn(
+            "h-full rounded-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 transition-all duration-500"
+          )}
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   )
