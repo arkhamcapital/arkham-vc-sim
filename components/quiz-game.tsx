@@ -6,6 +6,7 @@ import { CompanyCard } from "./company-card"
 import { formatMoney } from "./investment-slider"
 import { Scoreboard } from "./scoreboard"
 import { ResultsScreen } from "./results-screen"
+import { Footer } from "./footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Send } from "lucide-react"
@@ -77,57 +78,60 @@ export function QuizGame() {
   // Intro screen
   if (gameState === "intro") {
     return (
-      <div className="relative flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4 overflow-hidden">
-        {/* Stock-market style background */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(74,222,128,0.35),transparent_60%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.4),transparent_55%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.25)_1px,transparent_1px)] bg-size-[56px_56px]" />
-        </div>
+      <>
+        <div className="relative flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4 overflow-hidden">
+          {/* Stock-market style background */}
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(74,222,128,0.35),transparent_60%),radial-gradient(circle_at_bottom,rgba(59,130,246,0.4),transparent_55%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.25)_1px,transparent_1px)] bg-size-[56px_56px]" />
+          </div>
 
-        <div className="flex flex-col items-center gap-3">
-          <span className="text-xs font-mono text-primary uppercase tracking-[0.3em]">
-            Test your investor instincts
-          </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground text-center text-balance leading-tight">
-            Simulatorvest
-          </h1>
-          <p className="text-muted-foreground text-center max-w-lg leading-relaxed mt-2">
-            {"You've been given "}
-            <span className="text-foreground font-mono font-bold">
-              {formatMoney(STARTING_AMOUNT)}
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-xs font-mono text-primary uppercase tracking-[0.3em]">
+              Test your investor instincts
             </span>
-            {" to invest. Over 10 rounds, you'll put "}
-            <span className="text-foreground font-mono font-bold">
-              {formatMoney(ROUND_INVESTMENT)}
-            </span>
-            {" into one company per round. Two are fake, one is real. Pick the real company and your stake stays in your portfolio, pick wrong and that round's "}
-            <span className="text-foreground font-mono font-bold">
-              {formatMoney(ROUND_INVESTMENT)}
-            </span>
-            {" goes straight to 0."}
-          </p>
-        </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground text-center text-balance leading-tight">
+              Simulatorvest
+            </h1>
+            <p className="text-muted-foreground text-center max-w-lg leading-relaxed mt-2">
+              {"You've been given "}
+              <span className="text-foreground font-mono font-bold">
+                {formatMoney(STARTING_AMOUNT)}
+              </span>
+              {" to invest. Over 10 rounds, you'll put "}
+              <span className="text-foreground font-mono font-bold">
+                {formatMoney(ROUND_INVESTMENT)}
+              </span>
+              {" into one company per round. Two are fake, one is real. Pick the real company and your stake stays in your portfolio, pick wrong and that round's "}
+              <span className="text-foreground font-mono font-bold">
+                {formatMoney(ROUND_INVESTMENT)}
+              </span>
+              {" goes straight to 0."}
+            </p>
+          </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 mt-4">
-          <Button
-            onClick={handleStart}
-            size="lg"
-            className="group inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-600 px-8 text-lg font-mono font-semibold tracking-wider text-white shadow-[0_0_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:bg-emerald-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.9)]"
-          >
-            Start Investing
-            <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="flex-1 rounded-xl h-12 border border-emerald-500/40 bg-card/60 font-mono tracking-widest text-xs uppercase text-emerald-300 hover:bg-card/60 hover:border-emerald-400 hover:text-emerald-400"
-          >
-            <Link href="/submit-startup">
-              Founder - Let’s Connect            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Button
+              onClick={handleStart}
+              size="lg"
+              className="group inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-600 px-8 text-lg font-mono font-semibold tracking-wider text-white shadow-[0_0_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:bg-emerald-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.9)]"
+            >
+              Start Investing
+              <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="flex-1 rounded-xl h-12 border border-emerald-500/40 bg-card/60 font-mono tracking-widest text-xs uppercase text-emerald-300 hover:bg-card/60 hover:border-emerald-400 hover:text-emerald-400"
+            >
+              <Link href="/submit-startup">
+                Founder - Let’s Connect            </Link>
+            </Button>
+          </div>
         </div>
-      </div>
+        <Footer />
+      </>
     )
   }
 

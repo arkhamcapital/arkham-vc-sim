@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { formatMoney } from "./investment-slider"
 import { rounds } from "@/lib/quiz-data"
+import { Footer } from "./footer"
 import { RotateCcw, Trophy, TrendingDown, CircleDollarSign, TrendingUp } from "lucide-react"
 import Link from "next/link"
 
@@ -85,7 +86,7 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
   const showRoiBox = correctPicksWithRoi.length > 0
 
   return (
-    <div className="flex flex-col items-center gap-8 py-8 md:py-12">
+    <div className="flex min-h-[80vh] flex-col items-center gap-8 py-8 md:py-12">
       {/* Big grade */}
       <div className="flex flex-col items-center gap-2">
         <span className="text-xs font-mono text-muted-foreground uppercase tracking-[0.3em]">
@@ -237,6 +238,8 @@ export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
             Founder - Let's Connect          </Link>
         </Button>
       </div>
+
+      <Footer />
     </div>
   )
 }
