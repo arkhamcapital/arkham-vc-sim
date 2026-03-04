@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Dead or Alive: The Investor Game',
+  title: 'VC-simulator: The Investor Game',
   description: 'Can you spot the real company? Invest $1,000,000 across 10 rounds.',
   generator: 'v0.app',
   icons: {

@@ -12,19 +12,19 @@ interface RoundResult {
 }
 
 interface ResultsScreenProps {
-  portfolio: number
   roundResults: RoundResult[]
   onRestart: () => void
 }
 
-export function ResultsScreen({ portfolio, roundResults, onRestart }: ResultsScreenProps) {
+export function ResultsScreen({ roundResults, onRestart }: ResultsScreenProps) {
   const startingAmount = 1_000_000
-  const pnl = portfolio - startingAmount
-  const pnlPercent = ((pnl / startingAmount) * 100).toFixed(1)
-  const isUp = pnl >= 0
   const correctPicks = roundResults.filter((r) => r.correct).length
   const totalInvested = roundResults.reduce((sum, r) => sum + r.invested, 0)
   const totalLost = roundResults.filter((r) => !r.correct).reduce((sum, r) => sum + r.invested, 0)
+  const finalPortfolio = startingAmount - totalLost
+  const pnl = finalPortfolio - startingAmount
+  const pnlPercent = ((pnl / startingAmount) * 100).toFixed(1)
+  const isUp = pnl >= 0
 
   let grade: string
   let gradeColor: string
@@ -70,7 +70,7 @@ export function ResultsScreen({ portfolio, roundResults, onRestart }: ResultsScr
           Final Portfolio
         </span>
         <span className="text-4xl md:text-5xl font-bold font-mono text-foreground tabular-nums">
-          {formatMoney(portfolio)}
+          {formatMoney(finalPortfolio)}
         </span>
         <span
           className={cn(

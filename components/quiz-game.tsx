@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 import { ArrowRight, Send, AlertTriangle } from "lucide-react"
 
 const STARTING_AMOUNT = 1_000_000
+const ROUND_INVESTMENT = 100_000
 
 interface RoundResult {
   correct: boolean
@@ -19,11 +20,10 @@ interface RoundResult {
 }
 
 export function QuizGame() {
-  const [gameState, setGameState] = useState<"intro" | "playing" | "revealed" | "finished">("intro")
+  const [gameState, setGameState] = useState<"intro" | "playing" | "finished">("intro")
   const [currentRound, setCurrentRound] = useState(0)
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null)
-  const [investmentAmount, setInvestmentAmount] = useState(100_000)
-  const [portfolio, setPortfolio] = useState(STARTING_AMOUNT)
+  const [investmentAmount, setInvestmentAmount] = useState(ROUND_INVESTMENT)
   const [roundResults, setRoundResults] = useState<RoundResult[]>([])
 
   const round = rounds[currentRound]
@@ -42,38 +42,29 @@ export function QuizGame() {
 
     setRoundResults((prev) => [...prev, newResult])
 
-    if (!isCorrect) {
-      setPortfolio((prev) => prev - investmentAmount)
-    }
-
-    setGameState("revealed")
-  }, [selectedCompany, round, investmentAmount])
-
-  const handleNextRound = useCallback(() => {
+    // Immediately move to next round or finish without revealing correctness per round
     if (currentRound >= rounds.length - 1) {
       setGameState("finished")
-      return
+    } else {
+      setCurrentRound((prev) => prev + 1)
+      setSelectedCompany(null)
     }
-
-    setCurrentRound((prev) => prev + 1)
-    setSelectedCompany(null)
-    setInvestmentAmount(Math.round(portfolio * 0.1))
-    setGameState("playing")
-  }, [currentRound, portfolio])
+  }, [selectedCompany, round, investmentAmount, currentRound])
 
   const handleRestart = useCallback(() => {
     setGameState("intro")
     setCurrentRound(0)
     setSelectedCompany(null)
-    setInvestmentAmount(100_000)
-    setPortfolio(STARTING_AMOUNT)
+    setInvestmentAmount(ROUND_INVESTMENT)
     setRoundResults([])
   }, [])
 
   const handleStart = useCallback(() => {
     setGameState("playing")
-    setInvestmentAmount(100_000)
+    setInvestmentAmount(ROUND_INVESTMENT)
   }, [])
+
+  
 
   // Intro screen
   if (gameState === "intro") {
@@ -81,50 +72,35 @@ export function QuizGame() {
       <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4">
         <div className="flex flex-col items-center gap-3">
           <span className="text-xs font-mono text-primary uppercase tracking-[0.3em]">
-            The Investor Game
+            Test your investor instincts
           </span>
           <h1 className="text-5xl md:text-7xl font-bold text-foreground text-center text-balance leading-tight">
-            Dead or Alive
+            VC-simulator
           </h1>
           <p className="text-muted-foreground text-center max-w-lg leading-relaxed mt-2">
             {"You've been given "}
-            <span className="text-foreground font-mono font-bold">{formatMoney(STARTING_AMOUNT)}</span>
-            {" to invest. Over 10 rounds, you'll see three companies — two are fake, one is real. Pick the real company and invest wisely. Choose wrong, and you lose everything you put in."}
+            <span className="text-foreground font-mono font-bold">
+              {formatMoney(STARTING_AMOUNT)}
+            </span>
+            {" to invest. Over 10 rounds, you'll put "}
+            <span className="text-foreground font-mono font-bold">
+              {formatMoney(ROUND_INVESTMENT)}
+            </span>
+            {" into one company per round. Two are fake, one is real. Pick the real company and your stake stays in your portfolio, pick wrong and that round's "}
+            <span className="text-foreground font-mono font-bold">
+              {formatMoney(ROUND_INVESTMENT)}
+            </span>
+            {" goes straight to 0."}
           </p>
-        </div>
-
-        {/* Rules */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
-          <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">
-            <span className="text-2xl font-bold font-mono text-primary">01</span>
-            <span className="text-sm font-semibold text-foreground">Pick the real company</span>
-            <span className="text-xs text-muted-foreground leading-relaxed">
-              Two are fiction, one made history. Read the pitches carefully.
-            </span>
-          </div>
-          <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">
-            <span className="text-2xl font-bold font-mono text-primary">02</span>
-            <span className="text-sm font-semibold text-foreground">Set your stake</span>
-            <span className="text-xs text-muted-foreground leading-relaxed">
-              Choose how much to invest. Go big on confidence, play it safe when uncertain.
-            </span>
-          </div>
-          <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">
-            <span className="text-2xl font-bold font-mono text-primary">03</span>
-            <span className="text-sm font-semibold text-foreground">Grow your portfolio</span>
-            <span className="text-xs text-muted-foreground leading-relaxed">
-              Right picks keep your money. Wrong picks lose it all. What will you finish with?
-            </span>
-          </div>
         </div>
 
         <Button
           onClick={handleStart}
           size="lg"
-          className="mt-4 font-mono tracking-wider text-lg px-10 py-6 text-primary-foreground"
+          className="group relative mt-4 inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-600 px-10 text-lg font-mono font-semibold tracking-wider text-white shadow-[0_0_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:bg-emerald-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.9)] before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:translate-y-1/2 before:scale-150 before:bg-emerald-500/60 before:blur-3xl before:opacity-0 before:transition-all before:duration-500 before:content-[''] group-hover:before:translate-y-0 group-hover:before:opacity-100"
         >
           Start Investing
-          <ArrowRight className="w-5 h-5 ml-2" />
+          <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
         </Button>
       </div>
     )
@@ -134,7 +110,6 @@ export function QuizGame() {
   if (gameState === "finished") {
     return (
       <ResultsScreen
-        portfolio={portfolio}
         roundResults={roundResults}
         onRestart={handleRestart}
       />
@@ -146,7 +121,7 @@ export function QuizGame() {
     <div className="flex flex-col gap-6">
       {/* Scoreboard */}
       <Scoreboard
-        portfolio={portfolio}
+        portfolio={STARTING_AMOUNT}
         round={currentRound + 1}
         totalRounds={rounds.length}
         roundResults={roundResults}
@@ -166,27 +141,9 @@ export function QuizGame() {
           Which company is real?
         </h2>
         <p className="text-sm text-muted-foreground">
-          Select the company you believe actually existed, then set your investment amount.
+          Select the company you believe actually existed. Each round you put 100,000 into a single company—get it
+          right and your stake survives, get it wrong and that 100,000 goes to 0.
         </p>
-      </div>
-
-      {/* Progress dots */}
-      <div className="flex items-center gap-2">
-        {rounds.map((_, i) => (
-          <div
-            key={i}
-            className={cn(
-              "h-1.5 flex-1 rounded-full transition-colors",
-              i < currentRound
-                ? roundResults[i]?.correct
-                  ? "bg-primary"
-                  : "bg-destructive"
-                : i === currentRound
-                  ? "bg-foreground"
-                  : "bg-border"
-            )}
-          />
-        ))}
       </div>
 
       {/* Company cards */}
@@ -197,9 +154,20 @@ export function QuizGame() {
             company={company}
             index={index}
             isSelected={selectedCompany === index}
-            isRevealed={gameState === "revealed"}
+            isRevealed={false}
+            heat={
+              roundResults.length === 0
+                ? "neutral"
+                : (() => {
+                    const correctPicks = roundResults.filter((r) => r.correct).length
+                    const accuracy = correctPicks / roundResults.length
+                    if (accuracy >= 0.7) return "hot"
+                    if (accuracy <= 0.3) return "cold"
+                    return "neutral"
+                  })()
+            }
             onSelect={() => {
-              if (gameState !== "revealed") {
+              if (gameState === "playing") {
                 setSelectedCompany(index)
               }
             }}
@@ -207,26 +175,9 @@ export function QuizGame() {
         ))}
       </div>
 
-      {/* Investment slider + Submit */}
+      {/* Fixed investment + Submit */}
       {gameState === "playing" && (
         <div className="rounded-xl border border-border bg-card p-5 md:p-6">
-          <InvestmentSlider
-            value={investmentAmount}
-            maxValue={portfolio}
-            onChange={setInvestmentAmount}
-            disabled={gameState !== "playing"}
-          />
-
-          {/* Warning if investing more than 50% */}
-          {investmentAmount > portfolio * 0.5 && (
-            <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-accent/10 border border-accent/20">
-              <AlertTriangle className="w-4 h-4 text-accent shrink-0" />
-              <span className="text-xs text-accent">
-                {"High risk! You're investing over 50% of your portfolio."}
-              </span>
-            </div>
-          )}
-
           <Button
             onClick={handleSubmit}
             disabled={selectedCompany === null || investmentAmount === 0}
@@ -235,61 +186,6 @@ export function QuizGame() {
           >
             <Send className="w-4 h-4 mr-2" />
             Invest {formatMoney(investmentAmount)} in {selectedCompany !== null ? round.companies[selectedCompany].name : "..."}
-          </Button>
-        </div>
-      )}
-
-      {/* Revealed state - outcome + next */}
-      {gameState === "revealed" && (
-        <div className="flex flex-col gap-4">
-          {/* Outcome banner */}
-          <div
-            className={cn(
-              "rounded-xl border p-5 md:p-6",
-              roundResults[roundResults.length - 1]?.correct
-                ? "border-primary/30 bg-primary/5"
-                : "border-destructive/30 bg-destructive/5"
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <span
-                  className={cn(
-                    "text-lg font-bold font-mono",
-                    roundResults[roundResults.length - 1]?.correct
-                      ? "text-primary"
-                      : "text-destructive"
-                  )}
-                >
-                  {roundResults[roundResults.length - 1]?.correct ? "Correct!" : "Wrong Pick"}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {roundResults[roundResults.length - 1]?.correct
-                    ? `Your ${formatMoney(investmentAmount)} investment is safe.`
-                    : `You lost ${formatMoney(investmentAmount)} on a fake company.`}
-                </span>
-              </div>
-              <span
-                className={cn(
-                  "text-2xl font-bold font-mono tabular-nums",
-                  roundResults[roundResults.length - 1]?.correct
-                    ? "text-primary"
-                    : "text-destructive"
-                )}
-              >
-                {roundResults[roundResults.length - 1]?.correct ? "+" : "-"}
-                {formatMoney(investmentAmount)}
-              </span>
-            </div>
-          </div>
-
-          <Button
-            onClick={handleNextRound}
-            size="lg"
-            className="w-full font-mono tracking-wider text-primary-foreground"
-          >
-            {currentRound >= rounds.length - 1 ? "See Final Results" : "Next Round"}
-            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       )}

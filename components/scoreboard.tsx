@@ -16,7 +16,6 @@ export function Scoreboard({ portfolio, round, totalRounds, roundResults }: Scor
   const pnl = portfolio - startingAmount
   const pnlPercent = ((pnl / startingAmount) * 100).toFixed(1)
   const isUp = pnl >= 0
-  const correctPicks = roundResults.filter((r) => r.correct).length
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -65,7 +64,7 @@ export function Scoreboard({ portfolio, round, totalRounds, roundResults }: Scor
           Accuracy
         </div>
         <span className="text-xl md:text-2xl font-bold font-mono text-foreground tabular-nums">
-          {roundResults.length > 0 ? Math.round((correctPicks / roundResults.length) * 100) : 0}%
+          {"??"}%
         </span>
       </div>
     </div>
