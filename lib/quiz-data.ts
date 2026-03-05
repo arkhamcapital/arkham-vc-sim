@@ -38,23 +38,23 @@ export const rounds: Round[] = [
   },
   {
     id: 2,
-    era: "Social Media",
+    era: "Software Development",
     companies: [
       {
-        name: "Meta",
-        description: "Building tools that help people connect, share, and build community across apps and devices.",
+        name: "GitLab",
+        description: "A single DevSecOps platform where teams plan, review, and ship code using integrated source control, CI/CD, and security tools.",
         isReal: true,
         revealText: "This was the real company! The full story will be revealed after you submit your answer.",
       },
       {
         name: "CircleLink",
-        description: "A platform for private groups to share updates, plan events, and stay in touch.",
+        description: "An internal collaboration hub that promises to stitch together code reviews, incident channels, and runbooks into one dashboard—but never made it past pilot customers.",
         isReal: false,
         revealText: "This was a fake company. The description will be revealed after you submit your answer.",
       },
       {
-        name: "FeedStream",
-        description: "Curated social feeds and short-form video designed for the next generation of creators.",
+        name: "ActivityStream",
+        description: "A real-time activity feed for engineering teams that tried to turn every commit, deploy, and alert into a social-style timeline before shutting down.",
         isReal: false,
         revealText: "This was a fake company. The description will be revealed after you submit your answer.",
       },

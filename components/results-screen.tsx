@@ -11,7 +11,7 @@ import Link from "next/link"
 /** Rough $100k invested → value today (estimate). Keys match company names in quiz-data. */
 const ROI_BY_COMPANY: Record<string, { min: number; max: number }> = {
   Visa: { min: 2_000_000, max: 4_000_000 },
-  Meta: { min: 1_000_000, max: 2_000_000 },
+  GitLab: { min: 41_000, max: 43_000 },
   Uber: { min: 100_000, max: 300_000 },
   Airbnb: { min: 100_000, max: 400_000 },
   Doordash: { min: 100_000, max: 300_000 },

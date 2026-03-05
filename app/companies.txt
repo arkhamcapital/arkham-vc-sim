@@ -1,5 +1,5 @@
 Visa
-Meta
+Gitlab
 Uber
 Airbnb
 Doordash
