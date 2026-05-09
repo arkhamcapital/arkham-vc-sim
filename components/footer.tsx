@@ -21,9 +21,7 @@ export function Footer() {
         </div>
 
         <nav className="flex flex-wrap gap-3 text-[11px] font-mono uppercase tracking-[0.16em]">
-          <Link href="https://arkhamsystems.vercel.app/" target="_blank" className="hover:text-foreground transition-colors">
-            Arkham Systems
-          </Link>
+
           <Link href="https://x.com/rarascode" target="_blank" className="hover:text-foreground transition-colors">
             rarascode
           </Link>
